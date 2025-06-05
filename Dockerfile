@@ -11,16 +11,13 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 # Install dependencies using uv
-RUN uv pip install --system --no-cache-dir
+RUN uv pip install --system --no-cache-dir -r pyproject.toml
 
 # --- Builder stage (optional, for collecting static files, compiling, etc.) ---
 FROM base AS builder
 
 # Copy the rest of the application code
 COPY . .
-
-# (Optional) Collect static files, run tests, etc.
-RUN python manage.py collectstatic --noinput
 
 # --- Final image ---
 FROM python:3.12-slim AS final
