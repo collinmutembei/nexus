@@ -27,7 +27,6 @@ class ProductViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    # authentication_classes = []
 
     def get_queryset(self):
         user = self.request.user

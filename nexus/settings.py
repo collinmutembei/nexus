@@ -34,13 +34,12 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
-    "mozilla_django_oidc",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_pyoidc",
     "rest_framework",
-    # "rest_framework.authtoken",
     "api",
 ]
 
@@ -52,7 +51,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
 ROOT_URLCONF = "nexus.urls"
@@ -137,39 +135,37 @@ DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@localhost")
 
 
-AUTHENTICATION_BACKENDS = (
-    "api.auth.OIDCAuthenticationBackend",
-    "django.contrib.auth.backends.ModelBackend",
-)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "cache",
+    }
+}
 
-LOGIN_URL = "oidc_authentication_init"
-LOGIN_REDIRECT_URL = "/api/v1/"
-LOGOUT_REDIRECT_URL = "/api/v1/"
 
-OIDC_BASE_URL = os.environ.get("OIDC_BASE_URL")
-OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get(
-    "OIDC_AUTHORIZATION_ENDPOINT", f"{OIDC_BASE_URL}/auth"
-)
-OIDC_OP_TOKEN_ENDPOINT = os.environ.get("OIDC_TOKEN_ENDPOINT", f"{OIDC_BASE_URL}/token")
-OIDC_OP_USER_ENDPOINT = os.environ.get(
-    "OIDC_USER_ENDPOINT", f"{OIDC_BASE_URL}/userinfo"
-)
-OIDC_OP_JWKS_ENDPOINT = os.environ.get("OIDC_JWKS_ENDPOINT", f"{OIDC_BASE_URL}/certs")
-OIDC_RP_SIGN_ALGO = os.environ.get("OIDC_RP_SIGN_ALGO", "RS256")
+# OIDC Configuration
 
-OIDC_RP_CLIENT_ID = os.environ.get("OIDC_CLIENT_ID")
-OIDC_RP_CLIENT_SECRET = os.environ.get("OIDC_CLIENT_SECRET")
-
+oidc_config = {
+    "provider_class": "django_pyoidc.providers.keycloak_18.Keycloak18Provider",
+    "client_secret": os.environ.get("OIDC_CLIENT_SECRET"),
+    "client_id": os.environ.get("OIDC_CLIENT_ID"),
+    "provider_discovery_uri": os.environ.get(
+        "OIDC_PROVIDER_DISCOVERY_URI",
+        "http://localhost:8080/realms/master/.well-known/openid-configuration",
+    ),
+    "oidc_cache_provider_metadata": True,
+    "oidc_callback_path": "/auth/sso-callback",
+    "post_login_uri_success": "/api/v1/",
+    "hook_get_user": "api.oidc:get_user",
+}
+DJANGO_PYOIDC = {"sso": oidc_config, "drf": oidc_config}
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
-        # "rest_framework.authentication.TokenAuthentication",
-        # "rest_framework.authentication.SessionAuthentication",
+        "django_pyoidc.drf.authentication.OIDCBearerAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
-
-OIDC_DRF_AUTH_BACKEND = "api.auth.OIDCAuthenticationBackend"

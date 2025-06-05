@@ -18,13 +18,20 @@ Including another URLconf
 from django.contrib import admin
 from django.conf import settings
 from django.urls import path, include
+from django_pyoidc.helper import OIDCHelper
+
+
+oidc_helper = OIDCHelper(op_name="sso")
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("oidc/", include("mozilla_django_oidc.urls")),
+    path(
+        "auth/",
+        include((oidc_helper.get_urlpatterns(), "django_pyoidc"), namespace="auth"),
+    ),
     path("api/v1/", include("api.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += [
+        path("admin/", admin.site.urls),
         path("api-auth/", include("rest_framework.urls")),
     ]
