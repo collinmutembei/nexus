@@ -19,4 +19,33 @@ dependencies = [
 dev = [
     "aiosmtpd>=1.4.6",
     "ipdb>=0.13.13",
+    "pytest>=8.4.0",
+    "pytest-cov>=6.1.1",
+]
+
+[tool.coverage.run]
+source = ["api", "nexus"]
+branch = true
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "manage.py",
+    "oidc.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov=api --cov-report=term-missing --cov-report=xml"
+markers = [
+    "django_db: mark a test as requiring the Django database",
 ]
