@@ -9,7 +9,6 @@ Nexus is a Django-based API service for managing products, orders, and customers
 - Python 3.12+
 - PostgreSQL
 - Keycloak (OIDC Provider)
-- [uv](https://github.com/astral-sh/uv) (for dependency management)
 - Docker & Minikube (for local Kubernetes deployment)
 
 ---
@@ -28,21 +27,9 @@ uv pip install --system --no-cache-dir -r pyproject.toml
 ```
 
 ### 3. Set Up Environment Variables
-Create a `.env` file or export the following variables in your shell:
+Create a `.env` file and update environment variables accordingly:
 ```bash
-export SECRET_KEY=your-django-secret-key
-export POSTGRES_DB=nexus
-export POSTGRES_USER=postgres
-export POSTGRES_PASSWORD=yourpassword
-export POSTGRES_HOST=localhost
-export POSTGRES_PORT=5432
-export OIDC_CLIENT_ID=nexus-client
-export OIDC_CLIENT_SECRET=your-client-secret
-export OIDC_PROVIDER_DISCOVERY_URI=http://localhost:8080/realms/master/.well-known/openid-configuration
-export DEFAULT_FROM_EMAIL=webmaster@localhost
-export ADMIN_EMAIL=admin@localhost
-export AFRICASTALKING_USERNAME=your_at_username
-export AFRICASTALKING_API_KEY=your_at_api_key
+cp .env.example .env
 ```
 
 ### 4. Prepare the Database
