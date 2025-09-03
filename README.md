@@ -9,7 +9,6 @@ Nexus is a Django-based API service for managing products, orders, and customers
 - Python 3.12+
 - PostgreSQL
 - Keycloak (OIDC Provider)
-- [uv](https://github.com/astral-sh/uv) (for dependency management)
 - Docker & Minikube (for local Kubernetes deployment)
 
 ---
